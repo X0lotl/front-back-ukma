@@ -9,16 +9,12 @@ const port = 3000;
 
 let jsonParser = bodyParser.json();
 
-// const pool = new pg.Pool({
-//   user: 'REST',
-//   host: 'localhost',
-//   database: 'REST',
-//   password: process.env.PGPASSWORD,
-//   port: 5432
-// });
-
 const client = new pg.Client({
-  user: 'REST', host: 'localhost', database: 'REST', password: process.env.PGPASSWORD, port: 5432
+  user: 'REST',
+  host: 'localhost',
+  database: 'REST',
+  password: process.env.PGPASSWORD,
+  port: 5432
 });
 
 client.connect()
@@ -33,9 +29,15 @@ app.get('/', (req, res) => {
 });
 
 app.get('/person/id',jsonParser, (req, res) => {
-  const body = req.body;
+  let id = -1;
+  try {
+     id = parseInt(req.params.id);
+     console.log(id);
+  } catch (e) {
+    throw e
+  }
 
-  client.query(`Select * FROM people WHERE id = $1`, [body.id], (err, result) => {
+  client.query(`Select * FROM people WHERE id = $1`, [id], (err, result) => {
     if (err) {
       throw err;
     }
@@ -50,8 +52,6 @@ app.get('/people', (req, res) => {
     }
     res.status(200).json(results.rows);
   });
-
-
 });
 
 app.post('/person', jsonParser, (req, res) => {
@@ -61,8 +61,7 @@ app.post('/person', jsonParser, (req, res) => {
     if (err) throw err;
     res.status(201).send(`User added with ID: ${result.rows[0].id}`);
   });
-})
-
+});
 
 app.listen(port, () => {
   console.log(`Server start on port ${port}`);
