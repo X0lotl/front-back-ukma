@@ -28,25 +28,34 @@ app.get('/', (req, res) => {
   res.send("1");
 });
 
-app.get('/person/id', jsonParser, (req, res) => {
-  const id = parseInt(req.query.id);
+app.get('/people', (req, res) => {
+  const query = req.query;
+  const keys = Object.keys(query);
 
-  client.query(`Select * FROM people WHERE id = $1`, [id], (err, result) => {
+  let stringToPG = `Select * FROM people`;
+
+  if (keys.length !== 0) {
+    stringToPG += ` WHERE (`
+
+    for (let key of keys) {
+      stringToPG += ` ${key} = '${query[key]}'`;
+
+      if (key !== keys[keys.length - 1]) {
+        stringToPG += ' AND';
+      }
+    }
+
+    stringToPG += ` )`;
+  }
+  client.query(stringToPG, (err, result) => {
     if (err) {
       throw err;
     }
+
     res.status(200).json(result.rows);
   });
 });
 
-app.get('/people', (req, res) => {
-  client.query('SELECT * FROM people', (err, results) => {
-    if (err) {
-      throw err;
-    }
-    res.status(200).json(results.rows);
-  });
-});
 
 app.post('/person', jsonParser, (req, res) => {
   const {firstname, secondname, passport_number, room_number, paid_for_this_year} = req.body;
