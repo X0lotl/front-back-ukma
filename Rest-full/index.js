@@ -24,16 +24,10 @@ client.connect()
   .catch(e => console.log(e.stack))
   .finally(() => console.log("Start listening pg"));
 
-app.get('/', (req, res) => {
-  res.send("1");
-});
-
-app.get('/people', (req, res) => {
-  const query = req.query;
+function buildWhereStringToPG(query) {
   const keys = Object.keys(query);
 
-  let stringToPG = `Select * FROM people`;
-
+  let stringToPG = ``;
   if (keys.length !== 0) {
     stringToPG += ` WHERE (`
 
@@ -47,6 +41,20 @@ app.get('/people', (req, res) => {
 
     stringToPG += ` )`;
   }
+  return stringToPG;
+}
+
+app.get('/', (req, res) => {
+  res.send("1");
+});
+
+app.get('/people', (req, res) => {
+  const query = req.query;
+
+  let stringToPG = `Select * FROM people`;
+
+  stringToPG += buildWhereStringToPG(query);
+
   client.query(stringToPG, (err, result) => {
     if (err) {
       throw err;
@@ -58,7 +66,6 @@ app.get('/people', (req, res) => {
 
 app.post('/people', jsonParser, (req, res) => {
   const query = req.query;
-  const keys = Object.keys(query);
 
   const dataToUpdate = req.body;
   const keysToUpdate = Object.keys(dataToUpdate);
@@ -73,19 +80,7 @@ app.post('/people', jsonParser, (req, res) => {
     }
   }
 
-  if (keys.length !== 0) {
-    stringToPG += ` WHERE (`
-
-    for (let key of keys) {
-      stringToPG += ` ${key} = '${query[key]}'`;
-
-      if (key !== keys[keys.length - 1]) {
-        stringToPG += ' AND';
-      }
-    }
-
-    stringToPG += ` )`;
-  }
+  stringToPG += buildWhereStringToPG(query);
 
   client.query(stringToPG, (err, result) => {
     if (err) {
@@ -96,6 +91,9 @@ app.post('/people', jsonParser, (req, res) => {
   });
 });
 
+app.delete('/people', (req, res) => {
+
+});
 
 app.post('/person', jsonParser, (req, res) => {
   const {firstname, secondname, passport_number, room_number, paid_for_this_year} = req.body;
