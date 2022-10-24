@@ -28,14 +28,8 @@ app.get('/', (req, res) => {
   res.send("1");
 });
 
-app.get('/person/id',jsonParser, (req, res) => {
-  let id = -1;
-  try {
-     id = parseInt(req.params.id);
-     console.log(id);
-  } catch (e) {
-    throw e
-  }
+app.get('/person/id', jsonParser, (req, res) => {
+  const id = parseInt(req.query.id);
 
   client.query(`Select * FROM people WHERE id = $1`, [id], (err, result) => {
     if (err) {
