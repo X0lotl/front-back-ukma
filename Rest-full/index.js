@@ -56,6 +56,46 @@ app.get('/people', (req, res) => {
   });
 });
 
+app.post('/people', jsonParser, (req, res) => {
+  const query = req.query;
+  const keys = Object.keys(query);
+
+  const dataToUpdate = req.body;
+  const keysToUpdate = Object.keys(dataToUpdate);
+
+  let stringToPG = `UPDATE people SET`;
+
+  for (let keyToUpdate of keysToUpdate) {
+    stringToPG += ` ${keyToUpdate} = '${dataToUpdate[keyToUpdate]}'`;
+
+    if (keyToUpdate !== keysToUpdate[keysToUpdate.length - 1]) {
+      stringToPG += ', ';
+    }
+  }
+
+  if (keys.length !== 0) {
+    stringToPG += ` WHERE (`
+
+    for (let key of keys) {
+      stringToPG += ` ${key} = '${query[key]}'`;
+
+      if (key !== keys[keys.length - 1]) {
+        stringToPG += ' AND';
+      }
+    }
+
+    stringToPG += ` )`;
+  }
+
+  client.query(stringToPG, (err, result) => {
+    if (err) {
+      throw err;
+    }
+
+    res.status(200).send(`All people modified`);
+  });
+});
+
 
 app.post('/person', jsonParser, (req, res) => {
   const {firstname, secondname, passport_number, room_number, paid_for_this_year} = req.body;
