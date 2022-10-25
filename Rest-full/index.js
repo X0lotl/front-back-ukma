@@ -92,7 +92,18 @@ app.post('/people', jsonParser, (req, res) => {
 });
 
 app.delete('/people', (req, res) => {
+  const query = req.query;
+  let stringToPG = `DELETE FROM people`;
 
+  stringToPG += buildWhereStringToPG(query);
+
+  client.query(stringToPG, (err, result) => {
+    if (err) {
+      throw err;
+    }
+
+    res.status(200).send(`All users deleted`);
+  })
 });
 
 app.post('/person', jsonParser, (req, res) => {
