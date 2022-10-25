@@ -115,6 +115,28 @@ app.post('/person', jsonParser, (req, res) => {
   });
 });
 
+app.post('/person/paid', (req,res) => {
+  const id = parseInt(req.query.id);
+
+  client.query(`UPDATE people SET paid_for_this_year = true WHERE id = ${id} `, (err, result) => {
+    if (err) {
+      throw err;
+    }
+
+    res.status(200).send(`User paid with ID: ${id}`);
+  });
+});
+
+app.post('/new_year', (req, res) => {
+  client.query(`UPDATE people SET paid_for_this_year = false`, (err) => {
+    if (err) {
+      throw err;
+    }
+
+    res.status(200).send(`Congrats new year !!!!!! New money`);
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server start on port ${port}`);
 });
