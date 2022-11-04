@@ -1,0 +1,20 @@
+.main-content {
+    width: 1200px;
+    background-color: azure;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+}
+
+#sendMailButton {
+    padding: 10px;
+    margin: 80px;
+    background-color: aquamarine;
+}
+
+#sendMailButton:hover {
+    background-color: aqua;
+    transition: 0.3s;
+}
