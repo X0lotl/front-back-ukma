@@ -1,20 +1,23 @@
-.main-content {
-    width: 1200px;
-    background-color: azure;
+.container {
     margin-top: 50px;
-    margin-left: auto;
-    margin-right: auto;
-    display: flex;
-    justify-content: center;
-}
-
-#sendMailButton {
     padding: 10px;
-    margin: 80px;
-    background-color: aquamarine;
+    background-color: aliceblue;
+    border-radius: 10px;
 }
 
-#sendMailButton:hover {
-    background-color: aqua;
-    transition: 0.3s;
+.row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.inputForNewUser {
+    margin-bottom: 10px;
+}
+
+.buttonAddUser {
+    margin: 10px;
+}
+
+#sendToAllButton {
+    font-size: 24px;
 }
