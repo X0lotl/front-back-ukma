@@ -1,25 +1,20 @@
 const addNewUserButton = document.getElementById("addNewUserButton");
 const table = document.getElementById("sortTable");
+const Http = new XMLHttpRequest();
 
 function sendEmailToUser(id){
   console.log("Email was sended");
 }
 
-addNewUserButton.addEventListener("click", () =>{
+function addNewUserFunction(id , name, surname, email) {
+
   const tBody = table.childNodes[3];
-
-  const id = 1;
-  const inputName = document.getElementById("newNameInput");
-  const inputSurname = document.getElementById("newSurnameInput");
-  const inputEmail = document.getElementById("newEmailInput");
-
-  const inputs = [inputName, inputSurname, inputEmail];
 
   const newUser = document.createElement("tr");
   newUser.innerHTML = `<th>${id}</th>
-                    <th>${inputName.value}</th>
-                    <th>${inputSurname.value}</th>
-                    <th>${inputEmail.value}</th>`;
+                    <th>${name}</th>
+                    <th>${surname}</th>
+                    <th>${email}</th>`;
 
   const newUserButtonsTh = document.createElement("th");
   newUser.appendChild(newUserButtonsTh);
@@ -60,10 +55,32 @@ addNewUserButton.addEventListener("click", () =>{
   newUserButtonsArray[2].innerHTML='<i class="fa-regular fa-trash-can"></i>';
 
   tBody.appendChild(newUser);
+}
 
-  console.log(newUser.childNodes);
+addNewUserButton.addEventListener("click", () => {
+  const id = 1;
+  const inputName = document.getElementById("newNameInput");
+  const inputSurname = document.getElementById("newSurnameInput");
+  const inputEmail = document.getElementById("newEmailInput");
+
+  const inputs = [inputName, inputSurname, inputEmail];
+
+  addNewUserFunction(id, inputName.value, inputSurname.value, inputEmail.value);
 
   for (let input of inputs) {
     input.value = "";
   }
 });
+
+window.addEventListener('DOMContentLoaded', () => {
+
+  axios.get('http://localhost:3000/emails')
+    .then(res => {
+      const responseData = res.data;
+      for (let person of responseData) {
+        console.log(person);
+        addNewUserFunction(person.id, person.firstname, person.secondname, person.email);
+      }
+    })
+    .catch(err => console.log(err));
+})
