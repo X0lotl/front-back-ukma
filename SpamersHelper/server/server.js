@@ -117,6 +117,8 @@ app.post('/email', jsonParser, (req, res) => {
 
     client.query(`INSERT INTO emails (firstname, secondname, email) VALUES ($1, $2, $3) RETURNING *`, [firstname, secondname, email], (err, result) => {
         if (err) throw err;
-        res.status(201).send(`User added with ID: ${result.rows[0].id}`);
+        res.status(201).json({
+            "id": result.rows[0].id
+        });
     });
 });

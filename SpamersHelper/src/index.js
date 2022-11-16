@@ -2,11 +2,24 @@ const addNewUserButton = document.getElementById("addNewUserButton");
 const table = document.getElementById("sortTable");
 const Http = new XMLHttpRequest();
 
-function sendEmailToUser(id){
+function sendEmailToUser(id) {
   console.log("Email was sended");
 }
 
-function addNewUserFunction(id , name, surname, email) {
+function addUserToBd(name, surname, email) {
+  axios({
+    method: 'post',
+    url: 'http://localhost:3000/email',
+    data: {
+      "firstname": name,
+      "secondname": surname,
+      "email": email
+    }
+  })
+    .catch(err => console.log(err));
+}
+
+function addNewUserFunction(id, name, surname, email) {
 
   const tBody = table.childNodes[3];
 
@@ -52,24 +65,26 @@ function addNewUserFunction(id , name, surname, email) {
     console.log("Delete this user");
 
   });
-  newUserButtonsArray[2].innerHTML='<i class="fa-regular fa-trash-can"></i>';
+  newUserButtonsArray[2].innerHTML = '<i class="fa-regular fa-trash-can"></i>';
 
   tBody.appendChild(newUser);
 }
 
-addNewUserButton.addEventListener("click", () => {
-  const id = 1;
+addNewUserButton.addEventListener("click", async () => {
   const inputName = document.getElementById("newNameInput");
   const inputSurname = document.getElementById("newSurnameInput");
   const inputEmail = document.getElementById("newEmailInput");
 
+  addUserToBd(inputName.value, inputSurname.value, inputEmail.value);
   const inputs = [inputName, inputSurname, inputEmail];
 
-  addNewUserFunction(id, inputName.value, inputSurname.value, inputEmail.value);
+  //addNewUserFunction(id, inputName.value, inputSurname.value, inputEmail.value);
 
   for (let input of inputs) {
     input.value = "";
   }
+
+  window.location.reload();
 });
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -78,7 +93,6 @@ window.addEventListener('DOMContentLoaded', () => {
     .then(res => {
       const responseData = res.data;
       for (let person of responseData) {
-        console.log(person);
         addNewUserFunction(person.id, person.firstname, person.secondname, person.email);
       }
     })
