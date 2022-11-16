@@ -1,15 +1,35 @@
 const addNewUserButton = document.getElementById("addNewUserButton");
 const table = document.getElementById("sortTable");
-const Http = new XMLHttpRequest();
 
 function sendEmailToUser(id) {
   console.log("Email was sended");
 }
 
-function addUserToBd(name, surname, email) {
+function addUserToDB(name, surname, email) {
   axios({
     method: 'post',
     url: 'http://localhost:3000/email',
+    data: {
+      "firstname": name,
+      "secondname": surname,
+      "email": email
+    }
+  })
+    .catch(err => console.log(err));
+}
+
+function removeUserFromDB(id) {
+  axios({
+    method: "delete",
+    url: `http://localhost:3000/email?id=${id}`
+  })
+    .catch(err => console.log(err));
+}
+
+function editUserInDB(id, name, surname, email) {
+  axios({
+    method: 'post',
+    url: `http://localhost:3000/emails?id=${id}`,
     data: {
       "firstname": name,
       "secondname": surname,
@@ -61,21 +81,22 @@ function addNewUserFunction(id, name, surname, email) {
 
   newUserButtonsArray[2].classList.add("btn-danger");
   newUserButtonsArray[2].addEventListener("click", () => {
-
-    console.log("Delete this user");
-
+    removeUserFromDB(id);
+    setTimeout(()=> {
+      document.location.reload();
+    }, 50)
   });
   newUserButtonsArray[2].innerHTML = '<i class="fa-regular fa-trash-can"></i>';
 
   tBody.appendChild(newUser);
 }
 
-addNewUserButton.addEventListener("click", async () => {
+addNewUserButton.addEventListener("click",  () => {
   const inputName = document.getElementById("newNameInput");
   const inputSurname = document.getElementById("newSurnameInput");
   const inputEmail = document.getElementById("newEmailInput");
 
-  addUserToBd(inputName.value, inputSurname.value, inputEmail.value);
+  addUserToDB(inputName.value, inputSurname.value, inputEmail.value);
   const inputs = [inputName, inputSurname, inputEmail];
 
   //addNewUserFunction(id, inputName.value, inputSurname.value, inputEmail.value);
@@ -84,7 +105,9 @@ addNewUserButton.addEventListener("click", async () => {
     input.value = "";
   }
 
-  window.location.reload();
+  setTimeout(()=> {
+    document.location.reload();
+  }, 50);
 });
 
 window.addEventListener('DOMContentLoaded', () => {
