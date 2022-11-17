@@ -1,6 +1,7 @@
 const express = require('express');
 const pg = require('pg');
 const bodyParser = require('body-parser');
+const nodemailer = require("nodemailer");
 
 require("dotenv").config();
 
@@ -25,10 +26,6 @@ client.connect()
   .then(results => console.table(results.rows))
   .catch(e => console.log(e.stack))
   .finally(() => console.log("Start listening pg"));
-
-// app.get('/', (req, res) => {
-//     res.sendFile(path.resolve('src/index.html'));
-// });
 
 app.listen(port, () => {
     console.log(`Server start on port: ${port}`)
@@ -122,3 +119,41 @@ app.post('/email', jsonParser, (req, res) => {
         });
     });
 });
+
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    auth: {
+        user: "spamer.helper.ukma@gmail.com",
+        pass: process.env.NODEMAILERPASSWORD
+    }
+});
+
+app.post('/sendEmail', (req, res) => {
+    const query = req.query;
+    const id = query.id;
+
+    client.query(`Select * FROM emails WHERE id=${id}`, (err, result) => {
+        if (err) {
+            throw err
+        }
+
+        const message = {
+            from: "spamer.helper.ukma@gmail.com",
+            to: "danil200319771@gmail.com",
+            subject: "Subject",
+            html: `TestText`
+        };
+
+        transporter.sendMail(message, (err, info) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(info);
+            }
+        });
+    });
+
+    res.status(200).send("Email was sanded");
+})

@@ -1,8 +1,12 @@
 const addNewUserButton = document.getElementById("addNewUserButton");
 const table = document.getElementById("sortTable");
 
-function sendEmailToUser(id) {
-  console.log("Email was sended");
+function sendEmailToUser(id, text) {
+  axios({
+    method: 'post',
+    url: `http://localhost:3000/sendEmail?id=${id}`
+  })
+    .catch(err => console.log(err));
 }
 
 function addUserToDB(name, surname, email) {
@@ -64,9 +68,9 @@ function addNewUserFunction(id, name, surname, email) {
   }
 
   newUserButtonsArray[0].classList.add("btn-success");
-  newUserButtonsArray[0].addEventListener("click", (id) => {
+  newUserButtonsArray[0].addEventListener("click", () => {
 
-    sendEmailToUser(id);
+    sendEmailToUser(id, "Test");
 
   });
   newUserButtonsArray[0].innerHTML = '<i class="fa-regular fa-paper-plane">'
@@ -74,15 +78,32 @@ function addNewUserFunction(id, name, surname, email) {
   newUserButtonsArray[1].classList.add("btn-warning")
   newUserButtonsArray[1].addEventListener(("click"), () => {
 
-    console.log("Reduct this user");
+    newUser.innerHTML = `<th>${id}</th>
+                    <th><input value="${name}"></th>
+                    <th><input value="${surname}"></th>
+                    <th><input value="${email}"></th>
+                    <th><button class="btn btn-success"><i class="fa-solid fa-user-pen"></button></th>`;
 
+    const changeUserButton = newUser.childNodes[8].childNodes[0];
+
+    const inputName = newUser.childNodes[2].childNodes[0]
+    const inputSurname = newUser.childNodes[4].childNodes[0]
+    const inputEmail = newUser.childNodes[6].childNodes[0]
+
+    changeUserButton.addEventListener("click", () => {
+      editUserInDB(id, inputName.value,  inputSurname.value, inputEmail.value)
+      setTimeout(() => {
+        document.location.reload();
+      }, 50);
+
+    });
   });
   newUserButtonsArray[1].innerHTML = '<i class="fa-solid fa-user-pen">';
 
   newUserButtonsArray[2].classList.add("btn-danger");
   newUserButtonsArray[2].addEventListener("click", () => {
     removeUserFromDB(id);
-    setTimeout(()=> {
+    setTimeout(() => {
       document.location.reload();
     }, 50)
   });
@@ -91,7 +112,7 @@ function addNewUserFunction(id, name, surname, email) {
   tBody.appendChild(newUser);
 }
 
-addNewUserButton.addEventListener("click",  () => {
+addNewUserButton.addEventListener("click", () => {
   const inputName = document.getElementById("newNameInput");
   const inputSurname = document.getElementById("newSurnameInput");
   const inputEmail = document.getElementById("newEmailInput");
@@ -105,7 +126,7 @@ addNewUserButton.addEventListener("click",  () => {
     input.value = "";
   }
 
-  setTimeout(()=> {
+  setTimeout(() => {
     document.location.reload();
   }, 50);
 });
