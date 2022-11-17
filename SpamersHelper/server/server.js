@@ -59,6 +59,8 @@ app.get('/emails', (req, res) => {
 
     stringToPG += buildWhereStringToPG(query);
 
+    stringToPG += ` ORDER BY id`;
+
     client.query(stringToPG, (err, result) => {
         if (err) {
             throw err;
@@ -136,28 +138,35 @@ const transporter = nodemailer.createTransport({
 
 app.post('/sendEmail', jsonParser,  (req, res) => {
     const query = req.query;
-    const id = query.id;
     const messageText = req.body.text;
 
-    client.query(`Select * FROM emails WHERE id=${id}`, (err, result) => {
+    let stringToPG = `Select * FROM emails`;
+
+    stringToPG += buildWhereStringToPG(query);
+
+    client.query(stringToPG, (err, result) => {
         if (err) {
             throw err
         }
 
-        const message = {
-            from: "spamer.helper.ukma@gmail.com",
-            to: result.rows[0].email,
-            subject: "Subject",
-            html: messageText
-        };
+        for (let person of result.rows) {
+            const message = {
+                from: "spamer.helper.ukma@gmail.com",
+                to: person.email,
+                subject: "Subject",
+                html: messageText
+            };
 
-        transporter.sendMail(message, (err, info) => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(info);
-            }
-        });
+            transporter.sendMail(message, (err, info) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(info);
+                }
+            });
+        }
+
+
     });
 
     res.status(200).send("Email was sanded");

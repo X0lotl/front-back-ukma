@@ -1,10 +1,25 @@
 const addNewUserButton = document.getElementById("addNewUserButton");
 const table = document.getElementById("sortTable");
+const sendToAllButton = document.getElementById("sendToAllButton");
+
+const messageTextChoser = document.getElementById("sell");
+const customEmailTextInput = document.getElementById("customEmailText");
 
 function sendEmailToUser(id, text) {
   axios({
     method: 'post',
     url: `http://localhost:3000/sendEmail?id=${id}`,
+    data: {
+      text: text
+    }
+  })
+    .catch(err => console.log(err));
+}
+
+function sendEmailToALlUsers(text){
+  axios({
+    method: 'post',
+    url: `http://localhost:3000/sendEmail`,
     data: {
       text: text
     }
@@ -72,8 +87,15 @@ function addNewUserFunction(id, name, surname, email) {
 
   newUserButtonsArray[0].classList.add("btn-success");
   newUserButtonsArray[0].addEventListener("click", () => {
+    let mailText;
 
-    sendEmailToUser(id, "Test");
+    if (messageTextChoser.value === "Custom") {
+      mailText = customEmailTextInput.value;
+    } else {
+      mailText = messageTextChoser.value;
+    }
+
+    sendEmailToUser(id, mailText);
 
   });
   newUserButtonsArray[0].innerHTML = '<i class="fa-regular fa-paper-plane">'
@@ -133,6 +155,18 @@ addNewUserButton.addEventListener("click", () => {
     document.location.reload();
   }, 50);
 });
+
+sendToAllButton.addEventListener("click", () => {
+  let mailText;
+
+  if (messageTextChoser.value === "Custom") {
+    mailText = customEmailTextInput.value;
+  } else {
+    mailText = messageTextChoser.value;
+  }
+
+  sendEmailToALlUsers(mailText);
+})
 
 window.addEventListener('DOMContentLoaded', () => {
 
