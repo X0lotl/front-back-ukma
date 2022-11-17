@@ -4,7 +4,10 @@ const table = document.getElementById("sortTable");
 function sendEmailToUser(id, text) {
   axios({
     method: 'post',
-    url: `http://localhost:3000/sendEmail?id=${id}`
+    url: `http://localhost:3000/sendEmail?id=${id}`,
+    data: {
+      text: text
+    }
   })
     .catch(err => console.log(err));
 }

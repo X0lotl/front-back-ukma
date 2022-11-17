@@ -2,6 +2,7 @@ const express = require('express');
 const pg = require('pg');
 const bodyParser = require('body-parser');
 const nodemailer = require("nodemailer");
+const xoauth2 = require("xoauth2");
 
 require("dotenv").config();
 
@@ -122,17 +123,21 @@ app.post('/email', jsonParser, (req, res) => {
 
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    port: 587,
+    // service: 'gmail',
+    host: 'localhost',
+    port: 5025,
+    // secure: true,
+    // requireTLS: true,
     auth: {
-        user: "spamer.helper.ukma@gmail.com",
-        pass: process.env.NODEMAILERPASSWORD
+        user: "username",
+        pass: "password"
     }
 });
 
-app.post('/sendEmail', (req, res) => {
+app.post('/sendEmail', jsonParser,  (req, res) => {
     const query = req.query;
     const id = query.id;
+    const messageText = req.body.text;
 
     client.query(`Select * FROM emails WHERE id=${id}`, (err, result) => {
         if (err) {
@@ -141,9 +146,9 @@ app.post('/sendEmail', (req, res) => {
 
         const message = {
             from: "spamer.helper.ukma@gmail.com",
-            to: "danil200319771@gmail.com",
+            to: result.rows[0].email,
             subject: "Subject",
-            html: `TestText`
+            html: messageText
         };
 
         transporter.sendMail(message, (err, info) => {
