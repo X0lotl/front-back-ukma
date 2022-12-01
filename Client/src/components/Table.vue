@@ -1,5 +1,13 @@
 <template>
-  <AddNewUser :studentList="updatedList"></AddNewUser>
+  <div class="flex">
+    <div>
+      <AddNewUser :studentList="updatedList"></AddNewUser>
+    </div>
+    <div>
+      <EditForm v-if="userToEdit" :user="userToEdit" @close="userToEdit = null"></EditForm>
+    </div>
+  </div>
+  
   <table id="tableComponent" class="table table-bordered table-striped">
     <thead>
       <tr>
@@ -18,7 +26,7 @@
         </td>
         <td>
           <button class="btn btn-success" @click="userPaid(item)"><i class="fa-solid fa-coins"></i></button>
-          <button class="btn btn-warning"><i class="fa-regular fa-pen-to-square"></i></button>
+          <button class="btn btn-warning" @click="editUser(item)"><i class="fa-regular fa-pen-to-square"></i></button>
           <button class="btn btn-danger" @click="deleteUser(item)"><i class="fa-solid fa-trash"></i></button>
         </td>
       </tr>
@@ -27,6 +35,7 @@
 </template>
 <script>
 import AddNewUser from './AddNewUser.vue';
+import EditForm from './EditForm.vue'
 import { ref } from 'vue';
 import { sortBy } from 'lodash';
 import axios from 'axios';
@@ -34,7 +43,8 @@ import axios from 'axios';
 export default {
   name: 'TableComponent',
   components: {
-    AddNewUser
+    AddNewUser,
+    EditForm
   },
   props: {
     // 
@@ -45,7 +55,14 @@ export default {
       type: Array,
     }
   },
+  data() {
+    return {
+      userToEdit: this.userToEdit
+    }
+  }
+  ,
   setup(props) {
+    let userToEdit;
     let sort = ref(false);
     let updatedList = ref([...props.studentData]);
     let fieldThatSorded = ref(props.fields[0]);
@@ -107,8 +124,8 @@ export default {
       })
       .catch(err => {console.log(err)})
     },
-    editUser() {
-
+    editUser(user) {
+      this.userToEdit = user;
     }
   }
 }
@@ -118,5 +135,11 @@ export default {
 <style scoped>
 button {
   margin-right: 5px;
+}
+
+.flex{
+  display: flex;
+  justify-content: center;
+  margin-bottom: 50px;
 }
 </style>

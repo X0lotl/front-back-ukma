@@ -1,11 +1,11 @@
 <template>
   <div class="container text-center  mt-5 mb-5">
-    
-    <h1 class="mt-5 fw-bolder text-success "> Student's Database </h1>
+
+    <h1 class="mt-5 fw-bolder text-success "> Students in campus Database </h1>
     <div class="table-responsive my-5">
       <Table :fields='fields' :studentData="studentData"></Table>
     </div>
-
+    <button class="btn btn-danger">New year!</button>
   </div>
 </template>
 <script>
@@ -16,7 +16,7 @@ export default {
   name: 'App',
   components: {
     Table,
-},
+  },
   setup() {
     let studentData = [];
     const fields = [
@@ -24,15 +24,12 @@ export default {
     ]
     axios
       .get('http://localhost:3000/people')
-      .then(res => {studentData = res.data; return{ studentData, fields }})
-      .catch(err => {console.log(err)});
-    
+      .then(res => { studentData = res.data; return { studentData, fields } })
+      .catch(err => { console.log(err) });
 
-
-    
     return { studentData, fields }
-  }, mounted() {
-    
+  }, methods() {
+
   }
 }
 </script>

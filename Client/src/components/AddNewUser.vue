@@ -17,15 +17,14 @@ export default {
 
     data() {
         return {
-            firstname: 'Test',
-            secondname: 'Test',
-            passport_number: '1231',
-            room_number: '2',
+            firstname: '',
+            secondname: '',
+            passport_number: '',
+            room_number: '',
             paidForThisYear: false
         }
     }, methods: {
         addNewUserInDB(firstname, secondname, passport_number, room_number, paid_for_this_year) {
-            let id;
             axios({
                 method: 'post',
                 url: 'http://localhost:3000/person',
@@ -39,24 +38,29 @@ export default {
             })
                 .then(res => {
                     this.studentList.push({
-                    "id": res.data,
-                    "firstname": firstname,
-                    "secondname": secondname,
-                    "passport_number": passport_number,
-                    "room_number": room_number,
-                    "paid_for_this_year": paid_for_this_year
-                });
+                        "id": res.data,
+                        "firstname": firstname,
+                        "secondname": secondname,
+                        "passport_number": passport_number,
+                        "room_number": room_number,
+                        "paid_for_this_year": paid_for_this_year
+                    });
+                    this.firstname = "";
+                    this.secondname = "";
+                    this.passport_number = "";
+                    this.room_number = "";
+                    this.paid_for_this_year = "";
                 })
                 .catch(err => console.log(err));
 
-            
-        
+
+
         }
     }, props: {
         studentList: {
             type: Array
         }
-    }   
+    }
 }
 </script>
 
