@@ -6,15 +6,21 @@
         <th v-for="field in fields" :key='field' @click="sortTable(field)">
           {{ field }}
           <i v-if="fieldThatSorded === field && isAsc" class="fa-regular fa-sort-down"></i>
-          <i v-if="!isAsc" class="fa-regular fa-sort-up"></i>
+          <i v-if="!isAsc" class="fa-regular fa-sort-up"></i>'
         </th>
+        <th> Buttons:</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="item in updatedList" :key='item'>
         <td v-for="field in fields" :key='field'>
-          {{item[field]}}
-      </td>
+          {{ item[field] }}
+        </td>
+        <td>
+          <button class="btn btn-success" @click="userPaid(item)"><i class="fa-solid fa-coins"></i></button>
+          <button class="btn btn-warning"><i class="fa-regular fa-pen-to-square"></i></button>
+          <button class="btn btn-danger" @click="deleteUser(item)"><i class="fa-solid fa-trash"></i></button>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -23,7 +29,7 @@
 import AddNewUser from './AddNewUser.vue';
 import { ref } from 'vue';
 import { sortBy } from 'lodash';
-import axios from 'axios'
+import axios from 'axios';
 
 export default {
   name: 'TableComponent',
@@ -49,7 +55,7 @@ export default {
 
       if (col) {
         fieldThatSorded.value = col;
-         isAsc = !isAsc;
+        isAsc = !isAsc;
       }
 
       let tempArray = updatedList.value;
@@ -59,17 +65,58 @@ export default {
       } else {
         updatedList.value = sortBy(tempArray, col).reverse();
       }
-      
+
     }
 
-    return { sort, updatedList, sortTable, fieldThatSorded, isAsc};
+    return { sort, updatedList, sortTable, fieldThatSorded, isAsc };
   },
   mounted() {
     axios
       .get('http://localhost:3000/people')
-      .then(res => {this.updatedList = res.data;})
-      .catch(err => {console.log(err)});
+      .then(res => { this.updatedList = res.data; })
+      .catch(err => { console.log(err) });
+  },
+  methods: {
+    userPaid(user) {
+      axios({
+        method: 'post',
+        url: `http://localhost:3000/person/paid?id=${user.id}`
+      })
+        .then(res => {
+          for(let i in this.updatedList) {
+            if (this.updatedList[i].id === user.id) {
+              this.updatedList[i].paid_for_this_year = true;
+            }
+          }
+        })
+        .catch(err => { console.log(err) });
+    },
+    deleteUser(user) {
+      axios({
+        method: 'delete',
+        url: `http://localhost:3000/people?id=${user.id}`
+      })
+      .then(res => {
+        let newArray = []
+        for (let i in this.updatedList) {
+          if (this.updatedList[i].id !== user.id) {
+            newArray.push(this.updatedList[i]);
+          } 
+        }
+        this.updatedList = newArray;
+      })
+      .catch(err => {console.log(err)})
+    },
+    editUser() {
+
+    }
   }
 }
 
 </script>
+
+<style scoped>
+button {
+  margin-right: 5px;
+}
+</style>
