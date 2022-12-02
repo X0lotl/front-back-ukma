@@ -5,7 +5,7 @@
     <div class="table-responsive my-5">
       <Table :fields='fields' :studentData="studentData"></Table>
     </div>
-    <button class="btn btn-danger">New year!</button>
+    
   </div>
 </template>
 <script>
@@ -28,8 +28,9 @@ export default {
       .catch(err => { console.log(err) });
 
     return { studentData, fields }
-  }, methods() {
-
+  }, methods: {
+    
   }
+
 }
 </script>

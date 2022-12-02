@@ -32,6 +32,7 @@
       </tr>
     </tbody>
   </table>
+  <button class="btn btn-danger" @click="newYear()">New year!</button>
 </template>
 <script>
 import AddNewUser from './AddNewUser.vue';
@@ -126,6 +127,18 @@ export default {
     },
     editUser(user) {
       this.userToEdit = user;
+    },
+    newYear() {
+      axios({
+        method: 'post',
+        url: "http://localhost:3000/new_year"
+      })
+        .then(res => {
+          for (let student of this.updatedList) {
+            student.paid_for_this_year = false;
+          }
+        })
+        .catch(err => console.log(err));
     }
   }
 }
